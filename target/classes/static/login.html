@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>scadasec · Connexion</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-body">
+
+<div class="lang login-lang" role="group" aria-label="Language">
+  <button type="button" data-lang="fr">FR</button>
+  <button type="button" data-lang="en">EN</button>
+</div>
+
+<main class="login-card">
+  <svg class="logo login-logo" viewBox="0 0 32 32" aria-hidden="true">
+    <path d="M16 2 4 7v8c0 7.5 5 13.5 12 15 7-1.5 12-7.5 12-15V7L16 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M17.5 9 11 17.5h4.5L14.5 23 21 14.5h-4.5L17.5 9z" fill="currentColor"/>
+  </svg>
+  <h1>scadasec</h1>
+  <p class="login-sub" data-i18n="subtitle"></p>
+
+  <div id="error" class="login-error hidden" role="alert" data-i18n="error"></div>
+
+  <form method="post" action="/login" autocomplete="on">
+    <input type="hidden" name="_csrf" id="csrf" value="">
+
+    <label for="username" data-i18n="username"></label>
+    <input id="username" name="username" type="text" autocomplete="username" required autofocus>
+
+    <label for="password" data-i18n="password"></label>
+    <div class="pw">
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="button" id="toggle" data-i18n="show"></button>
+    </div>
+
+    <button type="submit" class="btn" data-i18n="submit"></button>
+  </form>
+
+  <p class="login-note" data-i18n="note"></p>
+</main>
+
+<script src="js/login.js"></script>
+</body>
+</html>

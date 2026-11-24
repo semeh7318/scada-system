@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>scadasec · Supervision SCADA</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M16 2 4 7v8c0 7.5 5 13.5 12 15 7-1.5 12-7.5 12-15V7L16 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M17.5 9 11 17.5h4.5L14.5 23 21 14.5h-4.5L17.5 9z" fill="currentColor"/>
+    </svg>
+    <div>
+      <h1>scadasec</h1>
+      <p data-i18n="subtitle"></p>
+    </div>
+  </div>
+
+  <div class="top-right">
+    <div class="conn"><span id="dot" class="dot"></span><span id="connText" data-i18n="connecting"></span></div>
+    <div id="clock" class="clock">--:--:--</div>
+
+    <div id="user" class="user hidden">
+      <div><span id="userName"></span> <span id="userRole"></span></div>
+      <button type="button" id="logoutBtn" data-i18n="logout"></button>
+    </div>
+
+    <div class="tools">
+      <button type="button" id="btnPause" class="icon-btn" data-i18n-title="tt_pause" aria-label="Pause">
+        <svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+        <svg class="i-play hidden" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button type="button" id="btnTheme" class="icon-btn" data-i18n-title="tt_theme" aria-label="Theme">
+        <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-.9-.1-1.3A6 6 0 0 1 13.3 3.1C12.9 3 12.5 3 12 3z"/></svg>
+      </button>
+      <button type="button" id="btnFull" class="icon-btn" data-i18n-title="tt_fullscreen" aria-label="Fullscreen">
+        <svg viewBox="0 0 24 24"><path d="M4 4h6v2H6v4H4zM14 4h6v6h-2V6h-4zM4 14h2v4h4v2H4zM18 14h2v6h-6v-2h4z"/></svg>
+      </button>
+    </div>
+
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="fr">FR</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<div id="banner" class="banner hidden" role="alert"></div>
+
+<main>
+  <section class="summary">
+    <div class="sum-item">
+      <span class="sum-label" data-i18n="sum_status"></span>
+      <span id="globalStatus" class="badge s-NORMAL">--</span>
+    </div>
+    <div class="sum-item">
+      <span class="sum-label" data-i18n="pump_label"></span>
+      <span class="sum-value"><span id="sumLamp" class="mini-lamp"></span><span id="sumPump">--</span></span>
+    </div>
+    <div class="sum-item">
+      <span class="sum-label" data-i18n="sum_alarms"></span>
+      <span id="sumAlarms" class="sum-value">0</span>
+    </div>
+    <div class="sum-item">
+      <span class="sum-label" data-i18n="sum_update"></span>
+      <span id="sumUpdate" class="sum-value">--:--:--</span>
+    </div>
+  </section>
+
+  <section id="kpis" class="kpis"></section>
+
+  <section class="row">
+    <article class="panel">
+      <h2 data-i18n="synoptic"></h2>
+      <svg id="synoptic" viewBox="0 0 480 230" role="img" aria-label="Process diagram">
+        <rect class="pipe-bg" x="100" y="128" width="194" height="14" rx="7"/>
+        <line id="flowIn" class="flow" x1="102" y1="135" x2="292" y2="135"/>
+        <rect class="pipe-bg" x="400" y="170" width="70" height="14" rx="7"/>
+        <line id="flowOut" class="flow on" x1="402" y1="177" x2="468" y2="177"/>
+
+        <clipPath id="tankClip"><rect x="294" y="32" width="106" height="166" rx="8"/></clipPath>
+        <rect class="tank" x="292" y="30" width="110" height="170" rx="10"/>
+        <rect id="water" class="water" x="294" y="198" width="106" height="0" clip-path="url(#tankClip)"/>
+        <text id="levelText" class="tank-val" x="347" y="122">--</text>
+        <text class="svg-label" x="347" y="220" data-i18n="tank_label"></text>
+
+        <circle id="pumpBody" class="pump-body" cx="68" cy="135" r="34"/>
+        <g id="impeller" class="impeller">
+          <path d="M68 135 L68 109 M68 135 L90.5 148 M68 135 L45.5 148" stroke-width="5" stroke-linecap="round" fill="none"/>
+        </g>
+        <circle class="hub" cx="68" cy="135" r="6"/>
+        <circle id="pumpLamp" class="lamp" cx="68" cy="84" r="7"/>
+        <text class="svg-label" x="68" y="190" data-i18n="pump_label"></text>
+        <text id="pumpState" class="pump-state" x="68" y="208">--</text>
+
+        <text id="roTemp" class="readout" x="197" y="116">--</text>
+        <text id="roPres" class="readout" x="197" y="162">--</text>
+        <text class="svg-label" x="436" y="205" data-i18n="distribution"></text>
+      </svg>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <h2 data-i18n="trends"></h2>
+        <div class="panel-tools">
+          <div id="tabs" class="tabs"></div>
+          <button type="button" id="btnCsv" class="link-btn" data-i18n="export_csv"></button>
+        </div>
+      </div>
+      <svg id="chart" viewBox="0 0 640 250" role="img" aria-label="Trend chart">
+        <g id="chartBase"></g>
+        <g id="chartHover" class="hidden">
+          <line id="hoverLine" class="hover-line" y1="16" y2="220"/>
+          <circle id="hoverDot" class="hover-dot" r="4.5"/>
+          <g id="hoverTip">
+            <rect id="tipBg" class="tip-bg" rx="6" width="132" height="42"/>
+            <text id="tipTime" class="tip-time"></text>
+            <text id="tipVal" class="tip-val"></text>
+          </g>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><i class="lg lg-line"></i><span data-i18n="lg_value"></span></span>
+        <span><i class="lg lg-warn"></i><span data-i18n="thr_warn"></span></span>
+        <span><i class="lg lg-crit"></i><span data-i18n="thr_crit"></span></span>
+      </div>
+    </article>
+  </section>
+
+  <section class="panel">
+    <h2 data-i18n="events"></h2>
+    <div class="table-wrap">
+      <table class="events">
+        <thead>
+          <tr>
+            <th data-i18n="col_time"></th>
+            <th data-i18n="col_equipment"></th>
+            <th data-i18n="col_severity"></th>
+            <th data-i18n="col_value"></th>
+          </tr>
+        </thead>
+        <tbody id="eventsBody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer data-i18n="footer"></footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>
